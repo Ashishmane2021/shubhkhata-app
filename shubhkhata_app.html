@@ -1,0 +1,1067 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShubhKhata - Shop Record Management</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 20px 0;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .logo {
+            color: white;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .btn-primary {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: #2196F3;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #1976D2;
+            transform: translateY(-2px);
+        }
+
+        .btn-warning {
+            background: #FF9800;
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background: #F57C00;
+            transform: translateY(-2px);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .main-grid {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .customers-section {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #4CAF50;
+            padding-bottom: 10px;
+        }
+
+        .customer-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .customer-item:hover {
+            background: #f8f9fa;
+            transform: translateX(5px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .customer-info {
+            flex: 1;
+        }
+
+        .customer-id {
+            font-weight: bold;
+            color: #2196F3;
+            font-size: 16px;
+        }
+
+        .customer-name {
+            font-size: 18px;
+            color: #333;
+            margin-top: 2px;
+        }
+
+        .balance-positive {
+            color: #4CAF50;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .balance-negative {
+            color: #f44336;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .balance-zero {
+            color: #2196F3;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .add-customer-section {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .add-customer-input {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        .add-customer-input:focus {
+            outline: none;
+            border-color: #4CAF50;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background: white;
+            margin: 20px auto;
+            padding: 20px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: #000;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #4CAF50;
+        }
+
+        .customer-detail-view {
+            display: none;
+        }
+
+        .customer-header {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .customer-title {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .customer-contact {
+            color: #666;
+            font-size: 16px;
+        }
+
+        .description-box {
+            margin-bottom: 20px;
+        }
+
+        .description-box textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .transaction-list {
+            border-top: 2px solid #ddd;
+            padding-top: 20px;
+        }
+
+        .transaction-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            font-size: 14px;
+        }
+
+        .transaction-date {
+            color: #666;
+            font-size: 12px;
+        }
+
+        .transaction-given {
+            color: #f44336;
+            font-weight: bold;
+        }
+
+        .transaction-received {
+            color: #4CAF50;
+            font-weight: bold;
+        }
+
+        .back-btn {
+            background: #666;
+            color: white;
+            margin-bottom: 20px;
+        }
+
+        .back-btn:hover {
+            background: #555;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+
+        .empty-state h3 {
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .collateral-details {
+            display: none;
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 8px;
+        }
+
+        .collateral-details textarea {
+            height: 60px;
+            resize: vertical;
+        }
+
+        .details-modal {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        .details-code {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            white-space: pre-line;
+            margin-top: 10px;
+        }
+
+        .moneylender-section {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="nav-container">
+            <div class="logo">📚 ShubhKhata</div>
+            <div class="nav-buttons">
+                <button class="btn btn-primary" onclick="showView('shop')" id="shopBtn">Shop Records</button>
+                <button class="btn btn-warning" onclick="showView('moneylender')" id="moneylenderBtn">Money Lending</button>
+                <button class="btn btn-secondary" onclick="exportData()">Export Data</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Shop Records View -->
+        <div id="shopView" class="main-grid">
+            <!-- Customer List View -->
+            <div id="customerListView">
+                <div class="section-title">Customer Records</div>
+                
+                <div class="add-customer-section">
+                    <input type="text" id="customerNameInput" class="add-customer-input" placeholder="Enter customer name">
+                    <input type="text" id="customerContactInput" class="add-customer-input" placeholder="Contact number">
+                    <button class="btn btn-primary" onclick="addCustomer()">Add Customer</button>
+                </div>
+
+                <div class="customers-section">
+                    <div id="customersList"></div>
+                </div>
+            </div>
+
+            <!-- Customer Detail View -->
+            <div id="customerDetailView" class="customer-detail-view">
+                <button class="btn back-btn" onclick="showCustomerList()">← Back to Customers</button>
+                
+                <div class="customer-header">
+                    <div class="customer-title" id="customerDetailName"></div>
+                    <div class="customer-contact" id="customerDetailContact"></div>
+                </div>
+
+                <div class="description-box">
+                    <textarea id="customerDescription" placeholder="Customer description/notes..."></textarea>
+                    <button class="btn btn-secondary" onclick="saveDescription()" style="margin-top: 10px;">Save Description</button>
+                </div>
+
+                <div class="action-buttons">
+                    <button class="btn btn-primary" onclick="openTransactionModal('given')">Money Given</button>
+                    <button class="btn btn-warning" onclick="openTransactionModal('received')">Money Received</button>
+                </div>
+
+                <div class="transaction-list">
+                    <h3>Transaction History</h3>
+                    <div id="transactionHistory"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Money Lending View -->
+        <div id="moneylenderView" class="main-grid moneylender-section">
+            <div class="section-title">Money Lending Records</div>
+            <div class="nav-buttons" style="margin-bottom: 20px;">
+                <button class="btn btn-primary" onclick="openLendingModal()">Add Lending Transaction</button>
+            </div>
+            <div id="lendingTransactionsList"></div>
+        </div>
+    </div>
+
+    <!-- Transaction Modal -->
+    <div id="transactionModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeTransactionModal()">&times;</span>
+            <h2 id="transactionModalTitle">Add Transaction</h2>
+            <form id="transactionForm">
+                <div class="form-group">
+                    <label for="transactionAmount">Amount (₹):</label>
+                    <input type="number" id="transactionAmount" step="0.01" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="transactionDescription">Description:</label>
+                    <textarea id="transactionDescription" rows="3" required></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="transactionDate">Date:</label>
+                    <input type="date" id="transactionDate" required>
+                </div>
+                
+                <div class="form-group" style="text-align: center; margin-top: 20px;">
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Add Transaction</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Money Lending Modal -->
+    <div id="lendingModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeLendingModal()">&times;</span>
+            <h2 id="lendingModalTitle">Add Lending Transaction</h2>
+            <form id="lendingForm">
+                <div class="form-group">
+                    <label for="borrowerName">Borrower Name:</label>
+                    <input type="text" id="borrowerName" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="borrowerContact">Contact Number:</label>
+                    <input type="text" id="borrowerContact" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="collateralType">Collateral Type:</label>
+                    <select id="collateralType" onchange="toggleCollateralDetails()" required>
+                        <option value="">Select Option</option>
+                        <option value="with">With Collateral</option>
+                        <option value="without">Without Collateral</option>
+                    </select>
+                </div>
+                
+                <div id="collateralDetails" class="collateral-details">
+                    <div class="form-group">
+                        <label for="jewelrySpec">Jewelry Specifications:</label>
+                        <textarea id="jewelrySpec" rows="3" placeholder="Describe the jewelry (weight, type, purity, etc.)"></textarea>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="lendingAmount">Amount Borrowed (₹):</label>
+                    <input type="number" id="lendingAmount" step="0.01" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="lendingDate">Transaction Date:</label>
+                    <input type="date" id="lendingDate" required>
+                </div>
+                
+                <div class="form-group" style="text-align: center; margin-top: 20px;">
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Submit Transaction</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Lending Details Modal -->
+    <div id="lendingDetailsModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeLendingDetailsModal()">&times;</span>
+            <div id="lendingTransactionDetails"></div>
+        </div>
+    </div>
+
+    <script>
+        let customers = [];
+        let nextCustomerId = 1;
+        let currentCustomer = null;
+        let currentTransactionType = '';
+        
+        // Money lending data
+        let lendingTransactions = [];
+        let nextLendingId = 1;
+        let editingLendingTransaction = null;
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            loadData();
+            showView('shop');
+            renderCustomers();
+            
+            // Transaction form handler
+            document.getElementById('transactionForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const amount = parseFloat(document.getElementById('transactionAmount').value);
+                const description = document.getElementById('transactionDescription').value.trim();
+                const date = document.getElementById('transactionDate').value;
+                
+                if (!amount || !description || !date) {
+                    alert('Please fill in all fields');
+                    return;
+                }
+                
+                addTransaction(currentCustomer.id, {
+                    type: currentTransactionType,
+                    amount: amount,
+                    description: description,
+                    date: date,
+                    timestamp: new Date().toISOString()
+                });
+                
+                closeTransactionModal();
+                showCustomerDetail(currentCustomer.id);
+                alert('Transaction added successfully!');
+            });
+
+            // Lending form handler
+            document.getElementById('lendingForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const borrowerName = document.getElementById('borrowerName').value.trim();
+                const contact = document.getElementById('borrowerContact').value.trim();
+                const collateralType = document.getElementById('collateralType').value;
+                const amount = document.getElementById('lendingAmount').value;
+                const date = document.getElementById('lendingDate').value;
+                
+                if (!borrowerName || !contact || !collateralType || !amount || !date) {
+                    alert('Please fill in all required fields');
+                    return;
+                }
+                
+                const formData = {
+                    borrowerName: borrowerName,
+                    contact: contact,
+                    collateralType: collateralType,
+                    jewelrySpec: document.getElementById('jewelrySpec').value.trim(),
+                    amount: parseFloat(amount),
+                    date: date
+                };
+                
+                if (editingLendingTransaction) {
+                    updateLendingTransaction(editingLendingTransaction.id, formData);
+                    alert('Transaction updated successfully!');
+                } else {
+                    addLendingTransaction(formData);
+                    alert('Transaction added successfully!');
+                }
+                
+                closeLendingModal();
+                renderLendingTransactions();
+            });
+        });
+
+        function showView(view) {
+            document.getElementById('shopView').style.display = view === 'shop' ? 'block' : 'none';
+            document.getElementById('moneylenderView').style.display = view === 'moneylender' ? 'block' : 'none';
+            
+            // Update active button styling
+            document.getElementById('shopBtn').style.background = view === 'shop' ? '#45a049' : '#4CAF50';
+            document.getElementById('moneylenderBtn').style.background = view === 'moneylender' ? '#F57C00' : '#FF9800';
+            
+            if (view === 'moneylender') {
+                renderLendingTransactions();
+            } else {
+                showCustomerList();
+            }
+        }
+
+        function addCustomer() {
+            const name = document.getElementById('customerNameInput').value.trim();
+            const contact = document.getElementById('customerContactInput').value.trim();
+            
+            if (!name) {
+                alert('Please enter customer name');
+                return;
+            }
+            
+            const customer = {
+                id: nextCustomerId,
+                name: name,
+                contact: contact || '',
+                balance: 0,
+                description: '',
+                transactions: [],
+                createdAt: new Date().toISOString()
+            };
+            
+            customers.push(customer);
+            nextCustomerId++;
+            
+            document.getElementById('customerNameInput').value = '';
+            document.getElementById('customerContactInput').value = '';
+            
+            saveData();
+            renderCustomers();
+            
+            // Automatically open the new customer
+            showCustomerDetail(customer.id);
+        }
+
+        function renderCustomers() {
+            const container = document.getElementById('customersList');
+            
+            if (customers.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <h3>No Customers Added Yet</h3>
+                        <p>Add your first customer using the form above</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            const html = customers.map(customer => {
+                let balanceClass = 'balance-zero';
+                let balanceText = '₹0';
+                
+                if (customer.balance > 0) {
+                    balanceClass = 'balance-positive';
+                    balanceText = `₹${customer.balance.toFixed(2)}`;
+                } else if (customer.balance < 0) {
+                    balanceClass = 'balance-negative';
+                    balanceText = `₹${Math.abs(customer.balance).toFixed(2)}`;
+                }
+                
+                return `
+                    <div class="customer-item" onclick="showCustomerDetail(${customer.id})">
+                        <div class="customer-info">
+                            <div class="customer-id">#${customer.id}</div>
+                            <div class="customer-name">${customer.name}</div>
+                        </div>
+                        <div class="${balanceClass}">${balanceText}</div>
+                    </div>
+                `;
+            }).join('');
+            
+            container.innerHTML = html;
+        }
+
+        function showCustomerList() {
+            document.getElementById('customerListView').style.display = 'block';
+            document.getElementById('customerDetailView').style.display = 'none';
+            renderCustomers();
+        }
+
+        function showCustomerDetail(customerId) {
+            const customer = customers.find(c => c.id === customerId);
+            if (!customer) return;
+            
+            currentCustomer = customer;
+            
+            document.getElementById('customerDetailName').textContent = customer.name;
+            document.getElementById('customerDetailContact').textContent = customer.contact || 'No contact provided';
+            document.getElementById('customerDescription').value = customer.description || '';
+            
+            document.getElementById('customerListView').style.display = 'none';
+            document.getElementById('customerDetailView').style.display = 'block';
+            
+            renderTransactionHistory(customer);
+        }
+
+        function saveDescription() {
+            if (!currentCustomer) return;
+            
+            const description = document.getElementById('customerDescription').value.trim();
+            const customerIndex = customers.findIndex(c => c.id === currentCustomer.id);
+            
+            if (customerIndex !== -1) {
+                customers[customerIndex].description = description;
+                currentCustomer.description = description;
+                saveData();
+                alert('Description saved successfully!');
+            }
+        }
+
+        function openTransactionModal(type) {
+    if (!currentCustomer) {
+        alert("Please select a customer first.");
+        return;
+    }
+            currentTransactionType = type;
+            document.getElementById('transactionModalTitle').textContent = 
+                type === 'given' ? 'Money Given to Customer' : 'Money Received from Customer';
+            document.getElementById('transactionDate').value = new Date().toISOString().split('T')[0];
+            document.getElementById('transactionModal').style.display = 'block';
+        }
+
+        function closeTransactionModal() {
+            document.getElementById('transactionModal').style.display = 'none';
+            document.getElementById('transactionForm').reset();
+        }
+
+        function addTransaction(customerId, transaction) {
+            const customerIndex = customers.findIndex(c => c.id === customerId);
+            if (customerIndex === -1) return;
+            
+            customers[customerIndex].transactions.push(transaction);
+            
+            // Update balance
+            if (transaction.type === 'given') {
+                customers[customerIndex].balance -= transaction.amount;
+            } else {
+                customers[customerIndex].balance += transaction.amount;
+            }
+            
+            saveData();
+        }
+
+        function renderTransactionHistory(customer) {
+            const container = document.getElementById('transactionHistory');
+            
+            if (!customer.transactions || customer.transactions.length === 0) {
+                container.innerHTML = '<p style="color: #666; font-style: italic;">No transactions yet</p>';
+                return;
+            }
+            
+            const html = customer.transactions.map(transaction => {
+                const amountClass = transaction.type === 'given' ? 'transaction-given' : 'transaction-received';
+                const sign = transaction.type === 'given' ? '-' : '+';
+                
+                return `
+                    <div class="transaction-item">
+                        <div>
+                            <div>${transaction.description}</div>
+                            <div class="transaction-date">${new Date(transaction.date).toLocaleDateString()}</div>
+                        </div>
+                        <div class="${amountClass}">${sign}₹${transaction.amount.toFixed(2)}</div>
+                    </div>
+                `;
+            }).join('');
+            
+            container.innerHTML = html;
+        }
+
+        // Money Lending Functions
+        function openLendingModal(transaction = null) {
+            editingLendingTransaction = transaction;
+            const modal = document.getElementById('lendingModal');
+            const form = document.getElementById('lendingForm');
+            const title = document.getElementById('lendingModalTitle');
+            
+            if (transaction) {
+                title.textContent = 'Edit Lending Transaction';
+                populateLendingForm(transaction);
+            } else {
+                title.textContent = 'Add Lending Transaction';
+                form.reset();
+                document.getElementById('lendingDate').value = new Date().toISOString().split('T')[0];
+                document.getElementById('collateralDetails').style.display = 'none';
+            }
+            
+            modal.style.display = 'block';
+        }
+
+        function closeLendingModal() {
+            document.getElementById('lendingModal').style.display = 'none';
+            editingLendingTransaction = null;
+        }
+
+        function closeLendingDetailsModal() {
+            document.getElementById('lendingDetailsModal').style.display = 'none';
+        }
+
+        function toggleCollateralDetails() {
+            const collateralType = document.getElementById('collateralType').value;
+            const details = document.getElementById('collateralDetails');
+            details.style.display = collateralType === 'with' ? 'block' : 'none';
+        }
+
+        function populateLendingForm(transaction) {
+            document.getElementById('borrowerName').value = transaction.borrowerName;
+            document.getElementById('borrowerContact').value = transaction.contact;
+            document.getElementById('collateralType').value = transaction.collateralType;
+            document.getElementById('lendingAmount').value = transaction.amount;
+            document.getElementById('lendingDate').value = transaction.date;
+            
+            if (transaction.collateralType === 'with') {
+                document.getElementById('jewelrySpec').value = transaction.jewelrySpec || '';
+                toggleCollateralDetails();
+            }
+        }
+
+        function addLendingTransaction(data) {
+            const transaction = {
+                id: String(nextLendingId).padStart(3, '0'),
+                ...data,
+                createdAt: new Date().toISOString()
+            };
+            
+            lendingTransactions.push(transaction);
+            nextLendingId++;
+            saveData();
+        }
+
+        function updateLendingTransaction(id, data) {
+            const index = lendingTransactions.findIndex(t => t.id === id);
+            if (index !== -1) {
+                lendingTransactions[index] = { ...lendingTransactions[index], ...data };
+                saveData();
+            }
+        }
+
+        function calculateInterest(principal, date, collateralType) {
+            const startDate = new Date(date);
+            const currentDate = new Date();
+            const monthsDiff = (currentDate.getFullYear() - startDate.getFullYear()) * 12 + 
+                              (currentDate.getMonth() - startDate.getMonth());
+            
+            const rate = collateralType === 'with' ? 0.02 : 0.03;
+            const interest = principal * rate * Math.max(monthsDiff, 1);
+            
+            return {
+                months: Math.max(monthsDiff, 1),
+                rate: rate * 100,
+                interest: interest,
+                total: principal + interest
+            };
+        }
+
+        function showLendingTransactionDetails(transactionId) {
+            const transaction = lendingTransactions.find(t => t.id === transactionId);
+            if (!transaction) return;
+
+            const calc = calculateInterest(transaction.amount, transaction.date, transaction.collateralType);
+            
+            const detailsHtml = `
+                <h2>Lending Transaction Details - ${transaction.id}</h2>
+                <div class="details-modal">
+                    <p><strong>Borrower:</strong> ${transaction.borrowerName}</p>
+                    <p><strong>Contact:</strong> ${transaction.contact}</p>
+                    <p><strong>Collateral:</strong> ${transaction.collateralType === 'with' ? 'Yes' : 'No'}</p>
+                    ${transaction.collateralType === 'with' ? `<p><strong>Jewelry:</strong> ${transaction.jewelrySpec}</p>` : ''}
+                    
+                    <div class="details-code">
+Transaction Date: ${new Date(transaction.date).toLocaleDateString()}
+Principal Amount: ₹${transaction.amount.toFixed(2)}
+Interest Rate: ${calc.rate}% per month
+Duration: ${calc.months} month(s)
+Interest Amount: ₹${calc.interest.toFixed(2)}
+Total Amount Due: ₹${calc.total.toFixed(2)}
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('lendingTransactionDetails').innerHTML = detailsHtml;
+            document.getElementById('lendingDetailsModal').style.display = 'block';
+        }
+
+        function renderLendingTransactions() {
+            const container = document.getElementById('lendingTransactionsList');
+            
+            if (lendingTransactions.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <h3>No Lending Transactions Yet</h3>
+                        <p>Click "Add Lending Transaction" to get started</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const html = lendingTransactions.map(transaction => {
+                const badgeClass = transaction.collateralType === 'with' ? 'collateral-badge' : 'no-collateral-badge';
+                const badgeText = transaction.collateralType === 'with' ? 'Collateral' : 'No Collateral';
+                
+                return `
+                    <div class="transaction-item" onclick="showLendingTransactionDetails('${transaction.id}')" style="cursor: pointer; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 10px; padding: 15px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <div style="font-weight: bold; color: #2196F3; font-size: 18px;">#${transaction.id}</div>
+                                <div style="color: #666; margin-top: 5px;">
+                                    ${transaction.borrowerName} - ₹${transaction.amount.toFixed(2)}
+                                    <span style="background: ${transaction.collateralType === 'with' ? '#4CAF50' : '#f44336'}; color: white; padding: 4px 8px; border-radius: 12px; font-size: 12px; margin-left: 10px;">${badgeText}</span>
+                                </div>
+                            </div>
+                            <button class="edit-btn" onclick="event.stopPropagation(); openLendingModal(lendingTransactions.find(t => t.id === '${transaction.id}'))">
+                                Edit
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            container.innerHTML = html;
+        }
+
+        function exportData() {
+            // Export both customer data and lending data
+            const allData = {
+                customers: customers,
+                lendingTransactions: lendingTransactions,
+                exportDate: new Date().toISOString()
+            };
+
+            // Create CSV for customers
+            let customerCSV = "Customer ID,Name,Contact,Balance,Description,Transaction Count\n";
+            customers.forEach(customer => {
+                const row = [
+                    customer.id,
+                    customer.name,
+                    customer.contact || 'N/A',
+                    customer.balance.toFixed(2),
+                    (customer.description || 'N/A').replace(/"/g, '""'),
+                    customer.transactions ? customer.transactions.length : 0
+                ].map(field => `"${field}"`).join(',');
+                customerCSV += row + "\n";
+            });
+
+            // Create CSV for lending transactions
+            let lendingCSV = "Transaction ID,Borrower Name,Contact,Collateral Type,Jewelry Specs,Amount,Date,Interest Rate,Current Interest,Total Due\n";
+            lendingTransactions.forEach(transaction => {
+                const calc = calculateInterest(transaction.amount, transaction.date, transaction.collateralType);
+                const row = [
+                    transaction.id,
+                    transaction.borrowerName,
+                    transaction.contact,
+                    transaction.collateralType === 'with' ? 'With Collateral' : 'Without Collateral',
+                    transaction.jewelrySpec || 'N/A',
+                    transaction.amount.toFixed(2),
+                    transaction.date,
+                    calc.rate + '%',
+                    calc.interest.toFixed(2),
+                    calc.total.toFixed(2)
+                ].map(field => `"${field}"`).join(',');
+                lendingCSV += row + "\n";
+            });
+
+            // Download customer data
+            downloadCSV(customerCSV, `customers_${new Date().toISOString().split('T')[0]}.csv`);
+            
+            // Download lending data if there are transactions
+            if (lendingTransactions.length > 0) {
+                setTimeout(() => {
+                    downloadCSV(lendingCSV, `lending_transactions_${new Date().toISOString().split('T')[0]}.csv`);
+                }, 1000);
+            }
+        }
+
+        function downloadCSV(content, filename) {
+            const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', filename);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function saveData() {
+            try {
+                const data = {
+                    customers: customers,
+                    nextCustomerId: nextCustomerId,
+                    lendingTransactions: lendingTransactions,
+                    nextLendingId: nextLendingId
+                };
+                localStorage.setItem('shubhkhata_data', JSON.stringify(data));
+            } catch (error) {
+                console.error('Error saving data:', error);
+            }
+        }
+
+        function loadData() {
+            try {
+                const savedData = localStorage.getItem('shubhkhata_data');
+                if (savedData) {
+                    const data = JSON.parse(savedData);
+                    customers = data.customers || [];
+                    nextCustomerId = data.nextCustomerId || 1;
+                    lendingTransactions = data.lendingTransactions || [];
+                    nextLendingId = data.nextLendingId || 1;
+                } else {
+                    // Initialize with empty data
+                    customers = [];
+                    nextCustomerId = 1;
+                    lendingTransactions = [];
+                    nextLendingId = 1;
+                }
+            } catch (error) {
+                console.error('Error loading data:', error);
+                customers = [];
+                nextCustomerId = 1;
+                lendingTransactions = [];
+                nextLendingId = 1;
+            }
+        }
+
+        // Close modals when clicking outside
+        window.onclick = function(event) {
+            const transactionModal = document.getElementById('transactionModal');
+            const lendingModal = document.getElementById('lendingModal');
+            const lendingDetailsModal = document.getElementById('lendingDetailsModal');
+            
+            if (event.target === transactionModal) {
+                closeTransactionModal();
+            }
+            if (event.target === lendingModal) {
+                closeLendingModal();
+            }
+            if (event.target === lendingDetailsModal) {
+                closeLendingDetailsModal();
+            }
+        }
+    </script>
+</body>
+</html>
